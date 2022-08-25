@@ -1,6 +1,7 @@
-var throttle = require('lodash.throttle');
+const throttle = require('lodash.throttle');
 
-// ___
+// ___make variables
+
 const emailInput = document.querySelector('input');
 
 const messageInput = document.querySelector('textarea');
@@ -11,8 +12,7 @@ const nameLocalStorage = 'feedback-form-state';
 
 let savedLocalSt = localStorage.getItem(nameLocalStorage);
 
-console.log(JSON.parse(savedLocalSt));
-// __функция устанавливает значение полей
+// __check LocStor and install textContent
 
 checkLocalStorrage();
 
@@ -30,31 +30,32 @@ function checkLocalStorrage() {
   }
 }
 
-// ___добавляем слушателей и функции
+// ___add e.listeners
 
-emailInput.addEventListener('input', e => {
-  // ловим собитие и записываем в обьект
-  savedLocalSt.email = e.currentTarget.value;
-  // превращаем обьект в строку
-  const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
-  // пишем обьект в лок стор
-  localStorage.setItem(nameLocalStorage, jsonNewLocalStorage);
-  // логируем
-  console.log(localStorage.getItem(nameLocalStorage));
-});
+emailInput.addEventListener(
+  'input',
+  throttle(e => {
+    // __add textContent to object
+    savedLocalSt.email = e.currentTarget.value;
+    // __transform obj to string
+    const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
+    // __save string to locStor
+    localStorage.setItem(nameLocalStorage, jsonNewLocalStorage);
+  }, 500)
+);
 
-messageInput.addEventListener('input', e => {
-  savedLocalSt.message = e.currentTarget.value;
+messageInput.addEventListener(
+  'input',
+  throttle(e => {
+    savedLocalSt.message = e.currentTarget.value;
 
-  const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
+    const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
 
-  // пишем обьект в лок стор
-  localStorage.setItem(nameLocalStorage, jsonNewLocalStorage);
-  // логируем
-  console.log(localStorage.getItem(nameLocalStorage));
-});
+    localStorage.setItem(nameLocalStorage, jsonNewLocalStorage);
+  }, 500)
+);
 
-// 3 task
+// __make submit
 
 form.addEventListener('submit', formClick);
 
@@ -66,5 +67,3 @@ function formClick(e) {
   localStorage.removeItem(nameLocalStorage);
   e.currentTarget.reset();
 }
-
-// При сабмите формы очищай хранилище и поля формы, а также выводи объект с полями email, message и текущими их значениями в консоль.

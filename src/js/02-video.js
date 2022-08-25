@@ -1,8 +1,9 @@
+// __join lib
 import Player from '@vimeo/player';
 
 const throttle = require('lodash.throttle');
 
-// ___
+// ___make variables
 
 const idIframe = document.querySelector('#vimeo-player');
 
@@ -10,29 +11,19 @@ const keyName = 'videoplayer-current-time';
 
 let currentTime = localStorage.getItem(keyName);
 
-// ___
+// ___declaration vimeo and install currentTime
 
 const player = new Player(idIframe);
 
 player.setCurrentTime(currentTime);
 
-// ___
+// ___add event timeupdate and save to locStor
 
-player.on('timeupdate', catchTime);
+player.on(
+  'timeupdate',
+  throttle(e => {
+    const timeEvent = e.seconds;
 
-function catchTime(e) {
-  const timeEvent = e.seconds;
-
-  localStorage.setItem(keyName, timeEvent);
-
-  // console.log(currentTime);
-}
-
-// ___
-
-document.addEventListener(
-  'click',
-  throttle(() => {
-    console.log('click');
-  }, 1300)
+    localStorage.setItem(keyName, timeEvent);
+  }, 1000)
 );
