@@ -7,9 +7,10 @@ const throttle = require('lodash.throttle');
 
 const idIframe = document.querySelector('#vimeo-player');
 
-const keyName = 'videoplayer-current-time';
-
-let currentTime = localStorage.getItem(keyName);
+const KEYNAME_LOCAL_STORAGE = 'videoplayer-current-time';
+// __check locStor
+let currentTime = localStorage.getItem(KEYNAME_LOCAL_STORAGE) || 0;
+console.log('startTime', currentTime);
 
 // ___declaration vimeo and install currentTime
 
@@ -19,11 +20,10 @@ player.setCurrentTime(currentTime);
 
 // ___add event timeupdate and save to locStor
 
-player.on(
-  'timeupdate',
-  throttle(e => {
-    const timeEvent = e.seconds;
+player.on('timeupdate', throttle(trackingCurrentTime, 1000));
 
-    localStorage.setItem(keyName, timeEvent);
-  }, 1000)
-);
+function trackingCurrentTime(e) {
+  const timeEvent = e.seconds;
+
+  localStorage.setItem(KEYNAME_LOCAL_STORAGE, timeEvent);
+}

@@ -8,62 +8,47 @@ const messageInput = document.querySelector('textarea');
 
 const form = document.querySelector('.feedback-form');
 
-const nameLocalStorage = 'feedback-form-state';
+const KEYNAME_LOCAL_STORAGE = 'feedback-form-state';
 
-let savedLocalSt = localStorage.getItem(nameLocalStorage);
+const getLocStor = () => localStorage.getItem(KEYNAME_LOCAL_STORAGE);
+
+let savedLocalSt = JSON.parse(getLocStor()) || {};
 
 // __check LocStor and install textContent
 
-checkLocalStorrage();
+setInputsValue();
 
-function checkLocalStorrage() {
-  if (savedLocalSt !== null) {
-    savedLocalSt = JSON.parse(savedLocalSt);
-
-    messageInput.value = savedLocalSt.message;
-
-    emailInput.value = savedLocalSt.email;
-  } else {
-    savedLocalSt = {};
-    messageInput.value = '';
-    emailInput.value = '';
-  }
+function setInputsValue() {
+  messageInput.value = savedLocalSt.message || '';
+  emailInput.value = savedLocalSt.email || '';
 }
 
-// ___add e.listeners
+// ___add e.listener
 
-emailInput.addEventListener(
-  'input',
-  throttle(e => {
-    // __add textContent to object
-    savedLocalSt.email = e.currentTarget.value;
-    // __transform obj to string
-    const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
-    // __save string to locStor
-    localStorage.setItem(nameLocalStorage, jsonNewLocalStorage);
-  }, 500)
-);
+form.addEventListener('input', throttle(formCatchInput, 500));
 
-messageInput.addEventListener(
-  'input',
-  throttle(e => {
-    savedLocalSt.message = e.currentTarget.value;
-
-    const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
-
-    localStorage.setItem(nameLocalStorage, jsonNewLocalStorage);
-  }, 500)
-);
+function formCatchInput(e) {
+  // __add textContent to object
+  savedLocalSt[e.target.name] = e.target.value;
+  // __transform obj to string
+  const jsonNewLocalStorage = JSON.stringify(savedLocalSt);
+  // __transform obj to string
+  localStorage.setItem(KEYNAME_LOCAL_STORAGE, jsonNewLocalStorage);
+  console.log(getLocStor());
+}
 
 // __make submit
 
-form.addEventListener('submit', formClick);
+form.addEventListener('submit', formSubmit);
 
-function formClick(e) {
+function formSubmit(e) {
   e.preventDefault();
-
-  console.log(savedLocalSt);
-
-  localStorage.removeItem(nameLocalStorage);
-  e.currentTarget.reset();
+  // getting object
+  console.log(JSON.parse(getLocStor()));
+  // clearing locStor
+  localStorage.removeItem(KEYNAME_LOCAL_STORAGE);
+  // clearing object
+  savedLocalSt = {};
+  // reset form
+  e.target.reset();
 }
